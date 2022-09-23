@@ -1,10 +1,9 @@
 const mongoose = require('mongoose')
-const logger = require('./logger')
-const config = require('config')
+require('dotenv').config()
 
-module.exports = function () {
-	const db = config.get('db')
-	mongoose
-		.connect(db, { useUnifiedTopology: false })
-		.then(() => logger.log('info', `Connected to MongoDb at ${db}`))
+module.exports = function() {
+    const db = process.env.DB
+    mongoose
+        .connect(db, { useUnifiedTopology: false })
+        .then(() => console.log(`Connected to MongoDb at ${db}`))
 }
