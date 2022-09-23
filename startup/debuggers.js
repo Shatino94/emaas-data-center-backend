@@ -1,4 +1,4 @@
 module.exports = function () {
-	const debug = require('debug')('app:startup')
-	return debug
-}
+  const debug = require("debug")("app:startup");
+  return debug;
+};

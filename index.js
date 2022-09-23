@@ -1,16 +1,16 @@
-const express = require('express')
-const app = express()
+const express = require("express");
+const app = express();
 
-require('./startup/cors')(app)
-require('./startup/debuggers')()
-require('./startup/db')()
-require('./startup/prod')(app)
-require('./startup/routes')(app)
+require("./startup/cors")(app);
+require("./startup/debuggers")();
+require("./startup/db")();
+require("./startup/prod")(app);
+require("./startup/routes")(app);
 
-let port = process.env.PORT || 8000
+let port = process.env.PORT || 8000;
 
 const server = app.listen(port, () => {
-    console.log(`Listening on port ${port}...`)
-})
+  console.log(`Listening on port ${port}...`);
+});
 
-module.exports = server
+module.exports = server;
