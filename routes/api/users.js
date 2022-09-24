@@ -7,6 +7,7 @@ const validateWith = require("../../middleware/validation");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const { User, userValidator } = require("../../db/models/User");
+const { request } = require("express");
 
 const userFound = async(userData, res) => {
     const user = await User.findOne({ email: userData.email });
@@ -52,7 +53,7 @@ router.put("/", [auth, validateWith(updateSchema)], async(req, res) => {
         image: req.body.image,
     };
     if (req.user) user.email = req.user.email;
-    await User.findOneAndUpdate(user);
+    await User.findOneAndUpdate({ email: req.user.email }, user);
     res.status(201).send(user);
 });
 
