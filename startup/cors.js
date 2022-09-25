@@ -1,15 +1,12 @@
 const cors = require("cors");
 
-module.exports = function(app) {
-    const whitelist = ["http://localhost:3000"];
-    const corsOptions = {
-        origin: function(origin, callback) {
-            if (whitelist.indexOf(origin) !== -1 || !origin) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-    };
-    app.use(cors(corsOptions));
+module.exports = function (app) {
+  const corsOptions = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  };
+
+  app.use(cors(corsOptions));
 };

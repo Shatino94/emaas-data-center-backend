@@ -1,39 +1,37 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const _ = require("lodash");
 const { User, userValidator } = require("../../db/models/User");
 const validateData = require("../../middleware/validateData");
 const auth = require("../../middleware/auth");
+const admin = require("../../middleware/admin");
 
 router.post("/", validateData(userValidator), async (req, res) => {
   const data = req.body;
   const user = await User.findOne({ email: data.email });
-  if (!user) return res.status(400).send("Username or password incorrect.");
+  if (!user) {
+    return res
+      .status(400)
+      .send({ error: "Username or password incorrect.", ok: false });
+  }
   const validPassword = await bcrypt.compare(data.password, user.password);
-  if (!validPassword)
-    return res.status(400).send("Username or password incorrect.");
+  if (!validPassword) {
+    return res
+      .status(400)
+      .send({ error: "Username or password incorrect.", ok: false });
+  }
+
   const token = user.generateAuthToken();
-  res.send(token);
+  res.status(200).send({ token, ok: true });
 });
 
-router.get("/", auth, async (req, res) => {
-  const user = await User.findOne({ email: data.email });
+router.get("/", [auth, admin], async (req, res) => {
+  const user = await User.findOne({ _id: req.query.id });
   if (!user)
-    return res.status(400).send({ error: "Invalid email or password." });
-
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      name: user.name,
-      phoneNumber: user.phoneNumber,
-      image: user.image,
-      email: user.email,
-      isAdmin: user.isAdmin || false,
-    },
-    "jwtPrivateKey"
-  );
-  res.send(token);
+    return res
+      .status(400)
+      .send({ error: "Invalid email or password.", ok: false });
+  res.status(200).send({ user, ok: true });
 });
 
 module.exports = router;

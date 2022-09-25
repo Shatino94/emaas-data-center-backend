@@ -1,17 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const { number } = require("joi");
-const { string } = require("joi");
-Joi.objectId = require("joi-objectid")(Joi);
 
 const ListingSchema = mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-    trim: true,
-    minLength: 1,
-    maxLength: 100,
-  },
   ownerName: {
     type: String,
     required: true,
@@ -35,30 +25,27 @@ const ListingSchema = mongoose.Schema({
   phone: {
     type: Number,
     required: true,
-    min: 0,
   },
   email: {
     type: String,
     required: true,
-    min: 0,
   },
   county: {
     type: String,
     required: true,
-    min: 0,
   },
   images: {
     type: [String],
-    required: true,
+    required: false,
   },
 
   longitude: {
-    type: Number,
+    type: String,
     required: false,
   },
 
   latitude: {
-    type: Number,
+    type: String,
     required: false,
   },
   classType: {
@@ -72,7 +59,7 @@ const ListingSchema = mongoose.Schema({
   },
 
   ageOfBuilding: {
-    type: String,
+    type: Number,
     required: true,
   },
 
@@ -92,7 +79,7 @@ const ListingSchema = mongoose.Schema({
   },
 
   landValuePerDeed: {
-    type: String,
+    type: Number,
     required: false,
   },
 
@@ -107,7 +94,7 @@ const ListingSchema = mongoose.Schema({
   },
 
   monthlyRent: {
-    type: String,
+    type: Number,
     required: true,
   },
 
@@ -285,6 +272,47 @@ const ListingSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+
+  totalArea: {
+    type: Number,
+    required: true,
+  },
+  tar: {
+    type: Number,
+    required: true,
+  },
+  marketValue: {
+    type: Number,
+    required: true,
+  },
+  depreciation: {
+    type: Number,
+    required: true,
+  },
+  localityDiscount: {
+    type: Number,
+    required: true,
+  },
+  fenceMarketValue: {
+    type: Number,
+    required: true,
+  },
+  pavementMarketValue: {
+    type: Number,
+    required: true,
+  },
+  landMarketValue: {
+    type: Number,
+    required: true,
+  },
+  estimatedValue: {
+    type: Number,
+    required: true,
+  },
+  agentId: {
+    type: String,
+    required: true,
+  },
 });
 
 const Listing = mongoose.model("Listing", ListingSchema);
@@ -293,24 +321,24 @@ const listingValidator = (data) => {
   const joiOptions = { abortEarly: false };
 
   const listingSchema = Joi.object({
-    id: Joi.objectId().required(),
     ownerName: Joi.string().min(1).max(100).required(),
-    address: Joi.number().required(),
+    agentId: Joi.string().required(),
+    address: Joi.string().required(),
     propertyCategory: Joi.number().required(),
     careTaker: Joi.number().required(),
     phone: Joi.number().required(),
-    email: Joi.number().required(),
-    county: Joi.number().required(),
-    images: Joi.array().required(),
-    longitude: Joi.number().optional(),
-    latitude: Joi.number().optional(),
+    email: Joi.string().required(),
+    county: Joi.string().required(),
+    images: Joi.array(),
+    longitude: Joi.string().optional(),
+    latitude: Joi.string().optional(),
     classType: Joi.string().required(),
     propertyGrade: Joi.string().required(),
     ageOfBuilding: Joi.number().required(),
     acquisitionCost: Joi.number().required(),
     location: Joi.string().required(),
     numberOfLots: Joi.number().required(),
-    landValuePerDeed: Joi.string().optional(),
+    landValuePerDeed: Joi.number().optional(),
     zone: Joi.string().required(),
     landUse: Joi.string().required(),
     monthlyRent: Joi.string().required(),
@@ -353,6 +381,15 @@ const listingValidator = (data) => {
     pavementAverageDiameter: Joi.string().required(),
     pavementLotCovered: Joi.string().required(),
     ageOfPavement: Joi.number().required(),
+    totalArea: Joi.number(),
+    tar: Joi.number(),
+    marketValue: Joi.number(),
+    depreciation: Joi.number(),
+    localityDiscount: Joi.number(),
+    fenceMarketValue: Joi.number(),
+    pavementMarketValue: Joi.number(),
+    landMarketValue: Joi.number(),
+    estimatedValue: Joi.number(),
   });
 
   const validation = listingSchema.validate(data, joiOptions);
