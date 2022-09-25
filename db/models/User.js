@@ -35,9 +35,11 @@ const userSchema = mongoose.Schema({
   },
   isActive: {
     type: Boolean,
+    default: true,
   },
   isAdmin: {
     type: Boolean,
+    default: false,
   },
 });
 
@@ -66,10 +68,26 @@ const userValidator = (data) => {
     name: Joi.string().min(1).max(255).required(),
     email: Joi.string().min(7).max(255).required().email(),
     password: Joi.string().min(8).max(255).required(),
-    phoneNumber: Joi.number().required(),
+    phoneNumber: Joi.number(),
     image: Joi.string().min(1).max(255),
-    isAdmin: Joi.boolean().required(),
-    isActive: Joi.boolean().required(),
+    isAdmin: Joi.boolean(),
+    isActive: Joi.boolean(),
+  });
+
+  const validation = userSchema.validate(data, joiOptions);
+  if (validation.error) {
+    const error = validation.error.details.map((e) => e.message);
+    return { error: error };
+  }
+  return { error: null };
+};
+
+const userLoginValidator = (data) => {
+  const joiOptions = { abortEarly: false };
+
+  const userSchema = Joi.object({
+    email: Joi.string().min(7).max(255).required().email(),
+    password: Joi.string().min(8).max(255).required(),
   });
 
   const validation = userSchema.validate(data, joiOptions);
@@ -83,4 +101,5 @@ const userValidator = (data) => {
 module.exports = {
   User,
   userValidator,
+  userLoginValidator,
 };

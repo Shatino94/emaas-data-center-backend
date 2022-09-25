@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const { User, userValidator } = require("../../db/models/User");
+const { User, userLoginValidator } = require("../../db/models/User");
 const validateData = require("../../middleware/validateData");
 const auth = require("../../middleware/auth");
 const admin = require("../../middleware/admin");
 
-router.post("/", validateData(userValidator), async (req, res) => {
+router.post("/", validateData(userLoginValidator), async (req, res) => {
   const data = req.body;
   const user = await User.findOne({ email: data.email });
   if (!user) {
@@ -20,7 +20,6 @@ router.post("/", validateData(userValidator), async (req, res) => {
       .status(400)
       .send({ error: "Username or password incorrect.", ok: false });
   }
-
   const token = user.generateAuthToken();
   res.status(200).send({ token, ok: true });
 });
