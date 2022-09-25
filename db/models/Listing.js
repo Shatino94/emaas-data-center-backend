@@ -23,7 +23,7 @@ const ListingSchema = mongoose.Schema({
     required: true,
     min: 0,
   },
-  phone: {
+  phoneNumber: {
     type: Number,
     required: true,
   },
@@ -314,6 +314,25 @@ const ListingSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
+
+  typeOfFloor: {
+    type: String,
+    required: true,
+  },
+
+  typeOfGarageGate: {
+    type: String,
+    required: true,
+  },
+
+  numberOfVaranda: {
+    type: String,
+    required: true,
+  },
+  numberOfDiningRoom: {
+    type: String,
+    required: true,
+  },
 });
 
 const Listing = mongoose.model("Listing", ListingSchema);
@@ -322,24 +341,33 @@ const listingValidator = (data) => {
   const joiOptions = { abortEarly: false };
 
   const listingSchema = Joi.object({
-    ownerName: Joi.string().min(1).max(100).required(),
     agentId: Joi.objectId().required(),
+    totalArea: Joi.number(),
+    tar: Joi.number(),
+    marketValue: Joi.number(),
+    depreciation: Joi.number(),
+    localityDiscount: Joi.number(),
+    fenceMarketValue: Joi.number(),
+    pavementMarketValue: Joi.number(),
+    landMarketValue: Joi.number(),
+    estimatedValue: Joi.number(),
+    ownerName: Joi.string().required(),
+    propertyCategory: Joi.string().required(),
+    careTakerName: Joi.string().required(),
     address: Joi.string().required(),
-    propertyCategory: Joi.number().required(),
-    careTaker: Joi.number().required(),
-    phone: Joi.number().required(),
-    email: Joi.string().required(),
+    email: Joi.string().email().required(),
+    phoneNumber: Joi.number().required(),
     county: Joi.string().required(),
-    images: Joi.array(),
-    longitude: Joi.string().optional(),
-    latitude: Joi.string().optional(),
+    images: Joi.array().required(),
+    longitude: Joi.number().optional(),
+    latitude: Joi.number().optional(),
     classType: Joi.string().required(),
     propertyGrade: Joi.string().required(),
     ageOfBuilding: Joi.number().required(),
     acquisitionCost: Joi.number().required(),
     location: Joi.string().required(),
     numberOfLots: Joi.number().required(),
-    landValuePerDeed: Joi.number().optional(),
+    landValuePerDeed: Joi.string().optional(),
     zone: Joi.string().required(),
     landUse: Joi.string().required(),
     monthlyRent: Joi.string().required(),
@@ -382,15 +410,6 @@ const listingValidator = (data) => {
     pavementAverageDiameter: Joi.string().required(),
     pavementLotCovered: Joi.string().required(),
     ageOfPavement: Joi.number().required(),
-    totalArea: Joi.number(),
-    tar: Joi.number(),
-    marketValue: Joi.number(),
-    depreciation: Joi.number(),
-    localityDiscount: Joi.number(),
-    fenceMarketValue: Joi.number(),
-    pavementMarketValue: Joi.number(),
-    landMarketValue: Joi.number(),
-    estimatedValue: Joi.number(),
   });
 
   const validation = listingSchema.validate(data, joiOptions);
