@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 
 const ListingSchema = mongoose.Schema({
   ownerName: {
@@ -310,7 +311,7 @@ const ListingSchema = mongoose.Schema({
     required: true,
   },
   agentId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
 });
@@ -322,7 +323,7 @@ const listingValidator = (data) => {
 
   const listingSchema = Joi.object({
     ownerName: Joi.string().min(1).max(100).required(),
-    agentId: Joi.string().required(),
+    agentId: Joi.objectId().required(),
     address: Joi.string().required(),
     propertyCategory: Joi.number().required(),
     careTaker: Joi.number().required(),

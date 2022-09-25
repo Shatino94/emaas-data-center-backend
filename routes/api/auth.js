@@ -25,8 +25,8 @@ router.post("/", validateData(userValidator), async (req, res) => {
   res.status(200).send({ token, ok: true });
 });
 
-router.get("/", [auth, admin], async (req, res) => {
-  const user = await User.findOne({ _id: req.query.id });
+router.get("/:id", [auth, admin], async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id });
   if (!user)
     return res
       .status(400)

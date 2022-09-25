@@ -8,7 +8,6 @@ const validateWith = require("../../middleware/validation");
 const bcrypt = require("bcrypt");
 const _ = require("lodash");
 const { User, userValidator } = require("../../db/models/User");
-const { request } = require("express");
 
 const userFound = async (userData, res) => {
   const user = await User.findOne({ email: userData.email });
@@ -53,35 +52,50 @@ router.post("/", validateData(userValidator), async (req, res) => {
   newUser.password = hashedPassword;
   await newUser.save();
   const token = newUser.generateAuthToken();
-  res.status(200).send({ token, ok: true });
+  res.status(200).send({ data: token, ok: true });
 });
 
-router.put("/", [auth, admin, validateWith(updateSchema)], async (req, res) => {
-  const user = {
-    name: req.body?.name,
-    phoneNumber: req.body?.phoneNumber,
-    image: req.body?.image,
-    isActive: req.body?.isActive,
-    isAdmin: req.body?.isAdmin,
-  };
-  const newUser = new User(
-    _.pick(user, ["name", "isActive", "phoneNumber", "isAdmin", "image"])
-  );
-  if (req.user) user.email = req.user.email;
-  await User.findOneAndUpdate({ email: req.user.email }, newUser);
-  res.status(201).send({ user, ok: true });
-});
+router.put(
+  "/:id",
+  [auth, admin, validateWith(updateSchema)],
+  async (req, res) => {
+    const user = {
+      name: req.body?.name,
+      phoneNumber: req.body?.phoneNumber,
+      image: req.body?.image,
+      isActive: req.body?.isActive,
+      isAdmin: req.body?.isAdmin,
+    };
+    const newUser = new User(
+      _.pick(user, ["name", "isActive", "phoneNumber", "isAdmin", "image"])
+    );
+    if (req.user) user.email = req.user.email;
+    await User.findOneAndUpdate({ email: req.user.email }, newUser);
+    res.status(201).send({ data: user, ok: true });
+  }
+);
 
-router.delete("/", [auth, admin], async (req, res) => {
-  await User.findOneAndDelete({ _id: req.query.id });
+router.delete("/:id", [auth, admin], async (req, res) => {
+  await User.findOneAndDelete({ _id: req.params.id });
   res.status(204).send({ ok: true });
 });
 
-router.post("/revoke", [auth, admin], async (req, res) => {
-  const user = await User.findById(req.query.id);
+router.post("/revoke/:id", [auth, admin], async (req, res) => {
+  const user = await User.findById(req.params.id);
   user.isActive = false;
   await user.save();
   res.status(200).send({ ok: true });
+});
+
+router.post("/reset/:id", [auth, admin], async (req, res) => {
+  const user = await User.findById(req.params.id);
+  const newPassword = req.body.password;
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+  user.password = hashedPassword;
+  await user.save();
+  const token = user.generateAuthToken();
+  res.status(200).send({ data: token, ok: true });
 });
 
 module.exports = router;
